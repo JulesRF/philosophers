@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 11:54:53 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/03/28 17:05:37 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/03/29 17:13:11 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,9 +61,38 @@ int	ft_error(int argc, char **argv)
 	return (0);
 }
 
-void	*ft_init_philo()
+void	ft_newphilo(t_data *data, int i;)
+{
+	t_philo		*philo;
+	pthread_t	id;
+
+	philo = malloc(sizeof(t_philo));
+	//init philo
+
+	pthread_create(&id, NULL, ft_routine, philo);
+}
+
+void	ft_init_philo(t_data *data, int argc, char **argv)
 {
 	int i;
+	pthread_t	thread_id;
+	t_philo		*philo;
+
+	malloc(sizeof(t_philo *));
+	if (!philo)
+		return (NULL);
+	i = 0;
+	while (i < argc)
+	{
+		ft_newphilo(data, i);
+		i += 2;
+	}
+	i = 1
+	while (i < argc)
+	{
+		ft_newphilo(data, i);
+		i += 2;
+	}
 }
 
 void	ft_init_struct(t_data *data, int argc, char **argv)
@@ -73,7 +102,7 @@ void	ft_init_struct(t_data *data, int argc, char **argv)
 	data->time_to_eat = ft_atoi(argv[3]);
 	data->time_to_sleep = ft_atoi(argv[4]);
 	if (argc == 6)
-		data->nb_meal = argv[5];
+		data->nb_meal = ft_atoi(argv[5]);
 	else
 		data->nb_meal = -5;
 	
@@ -87,12 +116,14 @@ void	*ft_test(void *arg)
 
 int	main(int argc, char **argv)
 {
-	pthread_t id;
-	
 	t_data	*data;
+	
 	if (ft_error(argc, argv))
 		return (write(1, "Error\n", 6), 1);
+	data = malloc(sizeof(t_data));
+	if (!data)
+		return (1);
 	ft_init_struct(data, argc, argv);
-	pthread_create(&id, NULL, ft_test, (void *)&id);
+	ft_init_philo(data, argc, argv);
 	pthread_exit(NULL);
 }
