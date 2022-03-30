@@ -6,7 +6,7 @@
 #    By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/22 14:45:19 by jroux-fo          #+#    #+#              #
-#    Updated: 2022/03/28 12:23:47 by jroux-fo         ###   ########.fr        #
+#    Updated: 2022/03/30 14:54:35 by jroux-fo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ NAME = philo
 SRCS_FILES	=	main.c		\
 				ft_atoi.c	\
 
-FLAGS = -Wall -Werror -Wextra -g3
+FLAGS = -Wall -Werror -Wextra -g3 -pthread
 
 INCLUDES = header
 

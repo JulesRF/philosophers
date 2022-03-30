@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 16:03:19 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/03/28 16:36:21 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/03/30 15:26:36 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ typedef struct	s_data {
 	int			time_to_sleep;
 	int			nb_meal;
 	int			*tab;
-	pthread_t	**philo_tab;
+	t_philo		**philo_tab;
 	t_philo		*philo;
 }				t_data;
 
