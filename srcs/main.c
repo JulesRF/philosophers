@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 11:54:53 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/03/30 15:34:05 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/03/31 15:16:47 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,11 +92,16 @@ int	ft_error(int argc, char **argv)
 void	*ft_routine(void *arg)
 {
 	t_philo	*philo;
-
+	struct timeval	current_time;
+	
 	philo = (t_philo *)arg;
-	ft_putstr("Le philo numero ");
+	pthread_mutex_lock(&philo->data->lock);
 	ft_putnbr(philo->index);
+	write(1, " ", 1);
+	gettimeofday(&current_time, NULL);
+	ft_putnbr(current_time.tv_usec);
 	write(1, "\n", 1);
+	pthread_mutex_unlock(&philo->data->lock);
 	pthread_exit(NULL);
 }
 
@@ -105,10 +110,11 @@ void	ft_newphilo(t_data *data, int i)
 	t_philo		*philo;
 	pthread_t	id;
 
+	id = NULL;
 	(void)data;
 	philo = malloc(sizeof(t_philo));
-	//init philo
 	philo->index = i;
+	philo->state = 1;
 	philo->id = id;
 	data->philo_tab[i] = philo;
 	pthread_create(&id, NULL, ft_routine, philo);
@@ -146,7 +152,7 @@ void	ft_init_struct(t_data *data, int argc, char **argv)
 		data->nb_meal = ft_atoi(argv[5]);
 	else
 		data->nb_meal = -5;
-	
+	printf("resultat du mutex_init: %d\n", pthread_mutex_init(&data->lock, NULL));
 }
 
 void	*ft_test(void *arg)
@@ -166,5 +172,6 @@ int	main(int argc, char **argv)
 		return (1);
 	ft_init_struct(data, argc, argv);
 	ft_init_philo(data, argc);
+	pthread_mutex_destroy(&data->lock);
 	pthread_exit(NULL);
 }
