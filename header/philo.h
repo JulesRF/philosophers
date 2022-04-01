@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 16:03:19 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/03/31 13:02:55 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/01 14:29:37 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ typedef struct	s_data	t_data;
 typedef struct	s_philo {
 	int			index;
 	int			state;
+	int			meals;
 	pthread_t	id;
 	t_data		*data;
 }				t_philo;
@@ -35,6 +36,7 @@ typedef struct	s_data {
 	int				nb_meal;
 	int				*tab;
 	pthread_mutex_t	lock;
+	pthread_mutex_t	*fork_tab;
 	t_philo			**philo_tab;
 	t_philo			*philo;
 }				t_data;

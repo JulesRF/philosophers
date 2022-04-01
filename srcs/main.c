@@ -6,12 +6,14 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 11:54:53 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/03/31 15:16:47 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/01 14:41:16 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 #include <stdio.h> ///////////////////////////////////////////////////////
+
+// pthread_mutex_t lock;
 
 int	ft_strlen(const char *str)
 {
@@ -89,19 +91,58 @@ int	ft_error(int argc, char **argv)
 	return (0);
 }
 
+void	ft_print_inf(t_philo *philo)
+{
+	struct timeval	current_time;
+	
+	pthread_mutex_lock(&philo->data->lock);
+	gettimeofday(&current_time, NULL);
+	ft_putnbr(current_time.tv_usec);
+	write(1, " ", 1);
+	ft_putnbr(philo->index);
+	write(1, " ", 1);
+	pthread_mutex_unlock(&philo->data->lock);
+}
+
+void	ft_eat(t_philo *philo)
+{
+	int	id_2fork;
+	
+	if (philo->index == philo->data->nb_philo - 1)
+		id_2fork = 0;
+	else
+		id_2fork = philo->index + 1;
+	pthread_mutex_lock(&philo->data->fork_tab[philo->index]);
+	ft_print_inf(philo);
+	ft_putstr("has taken a fork\n");
+	pthread_mutex_lock(&philo->data->fork_tab[id_2fork]);
+	ft_print_inf(philo);
+	ft_putstr("has taken a fork\n");
+	usleep(philo->data->time_to_die);
+	pthread_mutex_unlock(&philo->data->fork_tab[philo->index]);
+	pthread_mutex_unlock(&philo->data->fork_tab[id_2fork]);
+	// ft_print_inf(philo);
+	// ft_putstr("is done eating\n");
+}
+
 void	*ft_routine(void *arg)
 {
 	t_philo	*philo;
-	struct timeval	current_time;
-	
+
 	philo = (t_philo *)arg;
-	pthread_mutex_lock(&philo->data->lock);
-	ft_putnbr(philo->index);
-	write(1, " ", 1);
-	gettimeofday(&current_time, NULL);
-	ft_putnbr(current_time.tv_usec);
-	write(1, "\n", 1);
-	pthread_mutex_unlock(&philo->data->lock);
+	if (philo->data->nb_meal == -5)
+	{
+		while (1)
+			ft_eat(philo);
+	}
+	else
+	{
+		while (philo->meals < philo->data->nb_meal)
+		{
+			ft_eat(philo);
+			philo->meals++;
+		}
+	}
 	pthread_exit(NULL);
 }
 
@@ -110,12 +151,13 @@ void	ft_newphilo(t_data *data, int i)
 	t_philo		*philo;
 	pthread_t	id;
 
-	id = NULL;
-	(void)data;
+	// id = NULL;
 	philo = malloc(sizeof(t_philo));
 	philo->index = i;
 	philo->state = 1;
+	philo->meals = 0;
 	philo->id = id;
+	philo->data = data;
 	data->philo_tab[i] = philo;
 	pthread_create(&id, NULL, ft_routine, philo);
 }
@@ -142,6 +184,19 @@ void	ft_init_philo(t_data *data, int argc)
 	}
 }
 
+void	ft_init_fork(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	data->fork_tab = malloc(sizeof(pthread_mutex_t) * data->nb_philo);
+	while (i < data->nb_philo)
+	{
+		pthread_mutex_init(&data->fork_tab[i], NULL);
+		i++;
+	}
+}
+
 void	ft_init_struct(t_data *data, int argc, char **argv)
 {
 	data->nb_philo = ft_atoi(argv[1]);
@@ -152,13 +207,35 @@ void	ft_init_struct(t_data *data, int argc, char **argv)
 		data->nb_meal = ft_atoi(argv[5]);
 	else
 		data->nb_meal = -5;
-	printf("resultat du mutex_init: %d\n", pthread_mutex_init(&data->lock, NULL));
+	pthread_mutex_init(&data->lock, NULL);
+	data->philo_tab = malloc(sizeof(t_philo) * data->nb_philo);
+	ft_init_fork(data);
 }
 
-void	*ft_test(void *arg)
+// int  ft_join(pthread_t *tab_de_threads, t_data *data)
+// {
+//     int  i;
+	
+// 	i = 0;
+// 	while (i < data->nb_philo)
+// 	{
+// 		pthread_join(tab_de_threads[i]->id, NULL);
+// 		i++;
+// 	}
+// 	return (0);
+// }
+
+void	ft_clean_mutex(t_data *data)
 {
-	printf("salut\n");
-	return (arg);
+	int i;
+
+	i = 0;
+	while (i < data->nb_philo)
+	{
+		pthread_mutex_destroy(&data->fork_tab[i]);
+		i++;
+	}
+	pthread_mutex_destroy(&data->lock);
 }
 
 int	main(int argc, char **argv)
@@ -172,6 +249,7 @@ int	main(int argc, char **argv)
 		return (1);
 	ft_init_struct(data, argc, argv);
 	ft_init_philo(data, argc);
-	pthread_mutex_destroy(&data->lock);
+	// ft_join(data->philo_tab, data);
+	ft_clean_mutex(data);
 	pthread_exit(NULL);
 }
