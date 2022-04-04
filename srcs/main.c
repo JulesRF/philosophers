@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 11:54:53 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/01 14:41:16 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/04 03:02:52 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,10 +94,16 @@ int	ft_error(int argc, char **argv)
 void	ft_print_inf(t_philo *philo)
 {
 	struct timeval	current_time;
+	static long int	start_time = 0;
 	
+	if (start_time == 0)
+	{
+		gettimeofday(&current_time, NULL);
+		start_time = (long int)current_time.tv_usec;
+	}
 	pthread_mutex_lock(&philo->data->lock);
 	gettimeofday(&current_time, NULL);
-	ft_putnbr(current_time.tv_usec);
+	ft_putnbr(current_time.tv_usec - start_time);
 	write(1, " ", 1);
 	ft_putnbr(philo->index);
 	write(1, " ", 1);
