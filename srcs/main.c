@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 11:54:53 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/04 16:08:20 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/05 16:57:28 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,13 +87,6 @@ int	ft_error(int argc, char **argv)
 	return (0);
 }
 
-void	ft_print(char *str, t_data *data)
-{
-	pthread_mutex_lock(&data->str_lock);
-	ft_putstr(str);
-	pthread_mutex_unlock(&data->str_lock);
-}
-
 long long    ft_current_time(void)
 {
     struct timeval    time;
@@ -102,30 +95,37 @@ long long    ft_current_time(void)
     return ((time.tv_sec * 1000 + time.tv_usec / 1000));
 }
 
-void	ft_timestamp(long int time, t_data *data)
+char	*ft_display_string(int wich)
 {
-	pthread_mutex_lock(&data->time_lock);
-	ft_putnbr(time);
-	// printf("%ld", time);
-	write(1, " ", 1);
-	pthread_mutex_unlock(&data->time_lock);
+	if (wich == 1)
+		return ("has taken a fork\n");
+	if (wich == 2)
+		return ("is thinking\n");
+	if (wich == 3)
+		return ("is sleeping\n");
+	if (wich == 4)
+		return ("died\n");
+	return ("");
 }
 
-void	ft_print_inf(t_philo *philo)
+void	ft_print_inf(t_philo *philo, int str)
 {
 	pthread_mutex_lock(&philo->data->lock);
-	ft_timestamp(ft_current_time() - philo->data->start_time, philo->data);
+	ft_putnbr(ft_current_time() - philo->data->start_time);
+	write(1, " ", 1);
 	ft_putnbr(philo->index + 1);
 	write(1, " ", 1);
+	ft_putstr(ft_display_string(str));
 	pthread_mutex_unlock(&philo->data->lock);
 }
 
 int	ft_check_status(t_philo *philo)
 {
+	// if (philo->last_meal - ft_current_time() > philo->data->time_to_die)
+	// 	philo->state = 0;
 	if (philo->state == 1)
 		return (0);
-	ft_print_inf(philo);
-	ft_putstr("died\n");
+	ft_print_inf(philo, 4);
 	return (1);
 }
 
@@ -134,10 +134,11 @@ void	ft_sleep(t_philo *philo)
 	int i;
 
 	i = 0;
+	ft_print_inf(philo, 3);
 	while (i < philo->data->time_to_sleep / 50)
 	{
 		ft_check_status(philo);
-		usleep(50 * 1000);
+		usleep(5 * 1000);
 		i++;
 	}
 }
@@ -152,18 +153,15 @@ void	ft_eat(t_philo *philo)
 	else
 		id_2fork = philo->index + 1;
 	pthread_mutex_lock(&philo->data->fork_tab[philo->index]);
-	ft_print_inf(philo);
-	ft_print("has taken a fork\n", philo->data);
+	ft_print_inf(philo, 1);
 	pthread_mutex_lock(&philo->data->fork_tab[id_2fork]);
-	ft_print_inf(philo);
-	ft_print("has taken a fork\n", philo->data);
+	ft_print_inf(philo, 1);
+	// philo->last_meal = ft_current_time();
 	usleep(philo->data->time_to_eat * 1000);
 	pthread_mutex_unlock(&philo->data->fork_tab[philo->index]);
 	pthread_mutex_unlock(&philo->data->fork_tab[id_2fork]);
 	gettimeofday(&time, NULL);
-	philo->last_meal = time.tv_usec;
-	// ft_print_inf(philo);
-	// ft_putstr("is done eating\n");
+	philo->last_meal = time.tv_usec / 1000;
 }
 
 void	*ft_routine(void *arg)
@@ -177,8 +175,7 @@ void	*ft_routine(void *arg)
 		{
 			ft_eat(philo);
 			ft_sleep(philo);
-			ft_print_inf(philo);
-			ft_print("is thinking\n", philo->data);
+			ft_print_inf(philo, 2);
 		}
 	}
 	else
@@ -187,31 +184,31 @@ void	*ft_routine(void *arg)
 		{
 			ft_eat(philo);
 			philo->meals++;
+			// if meals == philo->data->nm_meal return
 			ft_sleep(philo);
-			ft_print_inf(philo);
-			ft_print("is thinking\n", philo->data);
+			ft_print_inf(philo, 2);
 		}
 	}
-	pthread_exit(NULL);
+	return (NULL);
 }
 
 void	ft_newphilo(t_data *data, int i)
 {
-	t_philo		*philo;
+	t_philo			*philo;
+	pthread_t		id;
 	struct timeval	time;
-	pthread_t	id;
 
-	// id = NULL;
 	philo = malloc(sizeof(t_philo));
 	philo->index = i;
 	philo->state = 1;
 	philo->meals = 0;
-	philo->id = id;
 	philo->data = data;
 	gettimeofday(&time, NULL);
-	philo->last_meal = time.tv_usec;
+	philo->last_meal = time.tv_usec / 1000;
+	// philo->last_meal = ft_current_time();
 	data->philo_tab[i] = philo;
 	pthread_create(&id, NULL, ft_routine, philo);
+	philo->id = id;
 }
 
 void	ft_init_philo(t_data *data, int argc)
@@ -219,9 +216,6 @@ void	ft_init_philo(t_data *data, int argc)
 	int 			i;
 	
 	(void)argc;
-	data->philo_tab = malloc(sizeof(t_philo) * data->nb_philo);
-	if (!data->philo_tab)
-		return ;
 	i = 0;
 	data->start_time = ft_current_time();
 	while (i < data->nb_philo)
@@ -229,7 +223,7 @@ void	ft_init_philo(t_data *data, int argc)
 		ft_newphilo(data, i);
 		i += 2;
 	}
-	usleep(20);
+	usleep(50);
 	i = 1;
 	while (i < data->nb_philo)
 	{
@@ -262,24 +256,25 @@ void	ft_init_struct(t_data *data, int argc, char **argv)
 	else
 		data->nb_meal = -5;
 	pthread_mutex_init(&data->lock, NULL);
-	pthread_mutex_init(&data->str_lock, NULL);
-	pthread_mutex_init(&data->time_lock, NULL);
 	data->philo_tab = malloc(sizeof(t_philo) * data->nb_philo);
+	if (!data->philo_tab)
+		return ;
 	ft_init_fork(data);
 }
 
-// int  ft_join(pthread_t *tab_de_threads, t_data *data)
-// {
-//     int  i;
+int  ft_join(t_data *data)
+{
+    int  i;
 	
-// 	i = 0;
-// 	while (i < data->nb_philo)
-// 	{
-// 		pthread_join(tab_de_threads[i]->id, NULL);
-// 		i++;
-// 	}
-// 	return (0);
-// }
+	i = 0;
+	while (i < data->nb_philo)
+	{
+		pthread_join(data->philo_tab[i]->id, NULL);
+		free(data->philo_tab[i]);
+		i++;
+	}
+	return (0);
+}
 
 void	ft_clean_mutex(t_data *data)
 {
@@ -292,8 +287,6 @@ void	ft_clean_mutex(t_data *data)
 		i++;
 	}
 	pthread_mutex_destroy(&data->lock);
-	pthread_mutex_destroy(&data->str_lock);
-	pthread_mutex_destroy(&data->time_lock);
 }
 
 int	main(int argc, char **argv)
@@ -307,7 +300,7 @@ int	main(int argc, char **argv)
 		return (1);
 	ft_init_struct(data, argc, argv);
 	ft_init_philo(data, argc);
-	// ft_join(data->philo_tab, data);
+	ft_join(data);
 	ft_clean_mutex(data);
-	pthread_exit(NULL);
+	free(data);
 }
