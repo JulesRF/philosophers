@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 16:03:19 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/05 15:57:45 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/06 17:41:56 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ typedef struct	s_data {
 	int				time_to_sleep;
 	int				nb_meal;
 	int				*tab;
+	int				dead;
 	long long		start_time;
 	pthread_mutex_t	lock;
 	pthread_mutex_t	*fork_tab;

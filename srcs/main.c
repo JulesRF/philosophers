@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 11:54:53 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/05 16:57:28 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/06 17:53:55 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,8 @@ char	*ft_display_string(int wich)
 		return ("is sleeping\n");
 	if (wich == 4)
 		return ("died\n");
+	if (wich == 5)
+		return ("is eating\n");
 	return ("");
 }
 
@@ -121,10 +123,10 @@ void	ft_print_inf(t_philo *philo, int str)
 
 int	ft_check_status(t_philo *philo)
 {
-	// if (philo->last_meal - ft_current_time() > philo->data->time_to_die)
-	// 	philo->state = 0;
+	if (philo->last_meal - ft_current_time() > philo->data->time_to_die)
+		philo->state = 0;
 	if (philo->state == 1)
-		return (0);
+		philo->data->dead = 1;
 	ft_print_inf(philo, 4);
 	return (1);
 }
@@ -135,7 +137,8 @@ void	ft_sleep(t_philo *philo)
 
 	i = 0;
 	ft_print_inf(philo, 3);
-	while (i < philo->data->time_to_sleep / 50)
+	// usleep(philo->data->time_to_sleep * 1000);
+	while (i < philo->data->time_to_sleep / 5)
 	{
 		ft_check_status(philo);
 		usleep(5 * 1000);
@@ -143,25 +146,35 @@ void	ft_sleep(t_philo *philo)
 	}
 }
 
-void	ft_eat(t_philo *philo)
+void	ft_eat_last(t_philo *philo)
 {
-	int	id_2fork;
-	struct timeval	time;
-
-	if (philo->index == philo->data->nb_philo - 1)
-		id_2fork = 0;
-	else
-		id_2fork = philo->index + 1;
+	pthread_mutex_lock(&philo->data->fork_tab[0]);
+	ft_print_inf(philo, 1);
 	pthread_mutex_lock(&philo->data->fork_tab[philo->index]);
 	ft_print_inf(philo, 1);
-	pthread_mutex_lock(&philo->data->fork_tab[id_2fork]);
-	ft_print_inf(philo, 1);
-	// philo->last_meal = ft_current_time();
+	philo->last_meal = ft_current_time();
+	ft_print_inf(philo, 5);
 	usleep(philo->data->time_to_eat * 1000);
 	pthread_mutex_unlock(&philo->data->fork_tab[philo->index]);
-	pthread_mutex_unlock(&philo->data->fork_tab[id_2fork]);
-	gettimeofday(&time, NULL);
-	philo->last_meal = time.tv_usec / 1000;
+	pthread_mutex_unlock(&philo->data->fork_tab[0]);
+}
+
+void	ft_eat(t_philo *philo)
+{
+	if (philo->index == philo->data->nb_philo - 1)
+		ft_eat_last(philo);
+	else
+	{
+		pthread_mutex_lock(&philo->data->fork_tab[philo->index]);
+		ft_print_inf(philo, 1);
+		pthread_mutex_lock(&philo->data->fork_tab[philo->index + 1]);
+		ft_print_inf(philo, 1);
+		philo->last_meal = ft_current_time();
+		ft_print_inf(philo, 5);
+		usleep(philo->data->time_to_eat * 1000);
+		pthread_mutex_unlock(&philo->data->fork_tab[philo->index + 1]);
+		pthread_mutex_unlock(&philo->data->fork_tab[philo->index]);
+	}
 }
 
 void	*ft_routine(void *arg)
@@ -184,7 +197,8 @@ void	*ft_routine(void *arg)
 		{
 			ft_eat(philo);
 			philo->meals++;
-			// if meals == philo->data->nm_meal return
+			if (philo->meals == philo->data->nb_meal)
+				return (NULL);
 			ft_sleep(philo);
 			ft_print_inf(philo, 2);
 		}
@@ -196,16 +210,13 @@ void	ft_newphilo(t_data *data, int i)
 {
 	t_philo			*philo;
 	pthread_t		id;
-	struct timeval	time;
 
 	philo = malloc(sizeof(t_philo));
 	philo->index = i;
 	philo->state = 1;
 	philo->meals = 0;
 	philo->data = data;
-	gettimeofday(&time, NULL);
-	philo->last_meal = time.tv_usec / 1000;
-	// philo->last_meal = ft_current_time();
+	philo->last_meal = ft_current_time();
 	data->philo_tab[i] = philo;
 	pthread_create(&id, NULL, ft_routine, philo);
 	philo->id = id;
@@ -223,13 +234,14 @@ void	ft_init_philo(t_data *data, int argc)
 		ft_newphilo(data, i);
 		i += 2;
 	}
-	usleep(50);
+	usleep(data->time_to_eat * 1000);
 	i = 1;
 	while (i < data->nb_philo)
 	{
 		ft_newphilo(data, i);
 		i += 2;
 	}
+	// je peux faire une boucle dans le main qui check l'etat de data->dead (beleck au usleep)
 }
 
 void	ft_init_fork(t_data *data)
@@ -251,6 +263,7 @@ void	ft_init_struct(t_data *data, int argc, char **argv)
 	data->time_to_die = ft_atoi(argv[2]);
 	data->time_to_eat = ft_atoi(argv[3]);
 	data->time_to_sleep = ft_atoi(argv[4]);
+	data->dead = 0;
 	if (argc == 6)
 		data->nb_meal = ft_atoi(argv[5]);
 	else
