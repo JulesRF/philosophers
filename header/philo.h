@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 16:03:19 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/06 17:41:56 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/08 14:54:00 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,9 @@ typedef struct	s_philo {
 
 typedef struct	s_data {
 	int				nb_philo;
-	int				time_to_die;
-	int				time_to_eat;
-	int				time_to_sleep;
+	double				time_to_die;
+	double				time_to_eat;
+	double				time_to_sleep;
 	int				nb_meal;
 	int				*tab;
 	int				dead;

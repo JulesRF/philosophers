@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 11:54:53 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/06 17:53:55 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/08 16:40:38 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,24 +121,28 @@ void	ft_print_inf(t_philo *philo, int str)
 	pthread_mutex_unlock(&philo->data->lock);
 }
 
-int	ft_check_status(t_philo *philo)
+void	ft_check_status(t_philo *philo)
 {
-	if (philo->last_meal - ft_current_time() > philo->data->time_to_die)
-		philo->state = 0;
-	if (philo->state == 1)
+	if (ft_current_time() - philo->last_meal > philo->data->time_to_die && philo->state == 1)
+	{
+		// 
 		philo->data->dead = 1;
-	ft_print_inf(philo, 4);
-	return (1);
+		//
+		philo->state = 0;
+		ft_print_inf(philo, 4);
+	}
+	if (philo->data)
 }
 
 void	ft_sleep(t_philo *philo)
 {
 	int i;
+	float max;
 
 	i = 0;
+	max = (float)philo->data->time_to_sleep * 0.2;
 	ft_print_inf(philo, 3);
-	// usleep(philo->data->time_to_sleep * 1000);
-	while (i < philo->data->time_to_sleep / 5)
+	while (i < max)
 	{
 		ft_check_status(philo);
 		usleep(5 * 1000);
@@ -186,6 +190,7 @@ void	*ft_routine(void *arg)
 	{
 		while (1)
 		{
+			
 			ft_eat(philo);
 			ft_sleep(philo);
 			ft_print_inf(philo, 2);
@@ -241,7 +246,9 @@ void	ft_init_philo(t_data *data, int argc)
 		ft_newphilo(data, i);
 		i += 2;
 	}
-	// je peux faire une boucle dans le main qui check l'etat de data->dead (beleck au usleep)
+	// while (data->dead != 1)
+	// {
+	// }
 }
 
 void	ft_init_fork(t_data *data)
