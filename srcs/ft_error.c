@@ -1,29 +1,46 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_error.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/28 11:54:53 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/11 17:07:00 by jroux-fo         ###   ########.fr       */
+/*   Created: 2022/04/11 17:02:22 by jroux-fo          #+#    #+#             */
+/*   Updated: 2022/04/11 17:16:27 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	main(int argc, char **argv)
+int	ft_isdigit(char *str)
 {
-	t_data	*data;
+	int	i;
 
-	if (ft_error(argc, argv))
-		return (write(1, "Error\n", 6), 1);
-	data = malloc(sizeof(t_data));
-	if (!data)
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] > '9' || str[i] < '0')
+		{
+			if (str[i] != '+')
+				return (1);
+		}
+		i++;
+	}
+	return (0);
+}
+
+int	ft_error(int argc, char **argv)
+{
+	int	i;
+
+	if (argc <= 4 || argc >= 7)
 		return (1);
-	ft_init_struct(data, argc, argv);
-	ft_init_philo(data, argc);
-	ft_join(data);
-	ft_clean_mutex(data);
-	free(data);
+	i = 1;
+	while (i < argc)
+	{
+		if (ft_isdigit(argv[i]) || ft_atoi(argv[i]) <= 0)
+			return (1);
+		i++;
+	}
+	return (0);
 }

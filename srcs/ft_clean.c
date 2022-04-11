@@ -1,29 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_clean.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/28 11:54:53 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/11 17:07:00 by jroux-fo         ###   ########.fr       */
+/*   Created: 2022/04/11 17:06:29 by jroux-fo          #+#    #+#             */
+/*   Updated: 2022/04/11 17:06:54 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	main(int argc, char **argv)
+int	ft_join(t_data *data)
 {
-	t_data	*data;
+	int	i;
 
-	if (ft_error(argc, argv))
-		return (write(1, "Error\n", 6), 1);
-	data = malloc(sizeof(t_data));
-	if (!data)
-		return (1);
-	ft_init_struct(data, argc, argv);
-	ft_init_philo(data, argc);
-	ft_join(data);
-	ft_clean_mutex(data);
-	free(data);
+	i = 0;
+	while (i < data->nb_philo)
+	{
+		pthread_join(data->philo_tab[i]->id, NULL);
+		free(data->philo_tab[i]);
+		i++;
+	}
+	return (0);
+}
+
+void	ft_clean_mutex(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->nb_philo)
+	{
+		pthread_mutex_destroy(&data->fork_tab[i]);
+		i++;
+	}
+	pthread_mutex_destroy(&data->lock);
+	pthread_mutex_destroy(&data->ded);
 }
