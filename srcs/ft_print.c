@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/11 17:05:50 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/11 17:06:06 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/12 16:47:58 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,13 @@ char	*ft_display_color(int wich)
 
 void	ft_print_inf(t_philo *philo, int str)
 {
+	pthread_mutex_lock(&philo->data->ded);
 	if (philo->data->dead && str != 4)
+	{
+		pthread_mutex_unlock(&philo->data->ded);
 		return ;
+	}
+	pthread_mutex_unlock(&philo->data->ded);
 	pthread_mutex_lock(&philo->data->lock);
 	ft_putstr(ft_display_color(str));
 	ft_putnbr(ft_current_time() - philo->data->start_time);

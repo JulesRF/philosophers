@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/11 17:04:38 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/11 17:05:03 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/12 17:14:44 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ void	ft_init_struct(t_data *data, int argc, char **argv)
 		data->nb_meal = -5;
 	pthread_mutex_init(&data->lock, NULL);
 	pthread_mutex_init(&data->ded, NULL);
+	pthread_mutex_init(&data->print_dead, NULL);
 	data->philo_tab = malloc(sizeof(t_philo) * data->nb_philo);
 	if (!data->philo_tab)
 		return ;

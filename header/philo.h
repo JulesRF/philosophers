@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 16:03:19 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/11 17:20:01 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/12 17:14:18 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ typedef struct s_data {
 	long long			start_time;
 	pthread_mutex_t		lock;
 	pthread_mutex_t		ded;
+	pthread_mutex_t		print_dead;
 	pthread_mutex_t		*fork_tab;
 	t_philo				**philo_tab;
 	t_philo				*philo;

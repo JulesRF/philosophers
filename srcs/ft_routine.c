@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/11 17:03:23 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/11 17:04:11 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/12 17:19:59 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,23 @@ int	ft_check_status(t_philo *philo)
 	if (ft_current_time() - philo->last_meal > philo->data->time_to_die
 		&& philo->state == 1)
 	{
+		pthread_mutex_lock(&philo->data->print_dead);
 		pthread_mutex_lock(&philo->data->ded);
-		philo->data->dead = 1;
+		philo->data->dead++;
 		pthread_mutex_unlock(&philo->data->ded);
 		philo->state = 0;
-		ft_print_inf(philo, 4);
+		if (philo->data->dead == 1)
+		{
+			ft_print_inf(philo, 4);
+			usleep(200);
+		}
+		philo->data->dead++;
+		pthread_mutex_unlock(&philo->data->print_dead);
 	}
-	if (philo->data->dead == 1)
-		return (1);
+	pthread_mutex_lock(&philo->data->ded);
+	if (philo->data->dead)
+		return (pthread_mutex_unlock(&philo->data->ded), 1);
+	pthread_mutex_unlock(&philo->data->ded);
 	return (0);
 }
 
@@ -78,7 +87,8 @@ int	ft_eat(t_philo *philo)
 		philo->last_meal = ft_current_time();
 		ft_print_inf(philo, 5);
 		if (ft_check_status(philo))
-			return (1);
+			return (pthread_mutex_unlock(&philo->data->fork_tab[philo->index + 1]),
+				pthread_mutex_unlock(&philo->data->fork_tab[philo->index]), 1);
 		usleep(philo->data->time_to_eat * 1000);
 		pthread_mutex_unlock(&philo->data->fork_tab[philo->index + 1]);
 		pthread_mutex_unlock(&philo->data->fork_tab[philo->index]);
@@ -104,11 +114,13 @@ void	*ft_routine(void *arg)
 	{
 		while (philo->meals < philo->data->nb_meal)
 		{
-			ft_eat(philo);
+			if (ft_eat(philo))
+				return (NULL);
 			philo->meals++;
 			if (philo->meals == philo->data->nb_meal)
 				return (NULL);
-			ft_sleep(philo);
+			if (ft_sleep(philo))
+				return (NULL);
 			ft_print_inf(philo, 2);
 		}
 	}
