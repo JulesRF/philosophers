@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/11 17:03:23 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/12 17:19:59 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/12 17:38:23 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,9 @@ int	ft_check_status(t_philo *philo)
 		if (philo->data->dead == 1)
 		{
 			ft_print_inf(philo, 4);
-			usleep(200);
+			// usleep(200);
 		}
-		philo->data->dead++;
-		pthread_mutex_unlock(&philo->data->print_dead);
+		return (pthread_mutex_unlock(&philo->data->print_dead), 1);
 	}
 	pthread_mutex_lock(&philo->data->ded);
 	if (philo->data->dead)
@@ -108,6 +107,7 @@ void	*ft_routine(void *arg)
 			if (ft_eat(philo) || ft_sleep(philo))
 				return (NULL);
 			ft_print_inf(philo, 2);
+			usleep(200);
 		}
 	}
 	else
@@ -122,6 +122,7 @@ void	*ft_routine(void *arg)
 			if (ft_sleep(philo))
 				return (NULL);
 			ft_print_inf(philo, 2);
+			usleep(200);
 		}
 	}
 	return (NULL);
