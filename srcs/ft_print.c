@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/11 17:05:50 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/12 16:47:58 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/13 15:15:11 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,18 @@ void	ft_print_inf(t_philo *philo, int str)
 	ft_putnbr(philo->index + 1);
 	write(1, " ", 1);
 	ft_putstr(ft_display_string(str));
+	ft_putstr("\033[0m");
+	pthread_mutex_unlock(&philo->data->lock);
+}
+
+void	ft_print_dead(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->data->lock);
+	ft_putstr("\e[38;5;196m");
+	ft_putnbr(ft_current_time() - philo->data->start_time);
+	write(1, " ", 1);
+	ft_putnbr(philo->index + 1);
+	ft_putstr(" died\n");
 	ft_putstr("\033[0m");
 	pthread_mutex_unlock(&philo->data->lock);
 }

@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 16:03:19 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/12 17:14:18 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/13 16:59:48 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,10 +73,12 @@ long long	ft_current_time(void);
 char		*ft_display_string(int wich);
 char		*ft_display_color(int wich);
 void		ft_print_inf(t_philo *philo, int str);
+void		ft_print_dead(t_philo *philo);
 
 //	ft_routine.c
 int			ft_check_status(t_philo *philo);
 int			ft_sleep(t_philo *philo);
+int			ft_usleep(t_philo *philo, long long time);
 int			ft_eat_last(t_philo *philo);
 int			ft_eat(t_philo *philo);
 void		*ft_routine(void *arg);

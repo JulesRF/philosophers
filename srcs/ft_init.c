@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/11 17:04:38 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/12 17:14:44 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/13 15:24:58 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,13 @@ void	ft_init_philo(t_data *data, int argc)
 		ft_newphilo(data, i);
 		i += 2;
 	}
+//	while (1)
+//	{
+//		if (data->dead != 0)
+//		{
+//			usleep()
+//		}
+//	}
 }
 
 void	ft_init_fork(t_data *data)
