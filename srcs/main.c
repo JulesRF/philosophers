@@ -17,7 +17,7 @@ int	main(int argc, char **argv)
 	t_data	*data;
 
 	if (ft_error(argc, argv))
-		return (write(1, "Error\n", 6), 1);
+		return (write(2, "Error\n", 6), 1);
 	data = malloc(sizeof(t_data));
 	if (!data)
 		return (1);
