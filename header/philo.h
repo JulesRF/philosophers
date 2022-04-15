@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 16:03:19 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/14 17:28:10 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/15 15:41:26 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ typedef struct s_data {
 	pthread_mutex_t		print_dead;
 	pthread_mutex_t		*fork_tab;
 	t_philo				**philo_tab;
-	t_philo				*philo;
 }				t_data;
 
 //	main.c
@@ -54,7 +53,8 @@ int			main(int argc, char **argv);
 int			ft_strlen(const char *str);
 void		ft_putchar(char c);
 void		ft_putstr(char *str);
-void		ft_putnbr(int nb);
+int			ft_check_status(t_philo *philo);
+int			ft_usleep(t_philo *philo, long long time);
 
 //	ft_error.c
 int			ft_isdigit(char *str);
@@ -77,11 +77,10 @@ void		ft_print_inf(t_philo *philo, int str);
 void		ft_print_dead(t_philo *philo);
 
 //	ft_routine.c
-int			ft_check_status(t_philo *philo);
 int			ft_sleep(t_philo *philo);
-int			ft_usleep(t_philo *philo, long long time);
 int			ft_eat_last(t_philo *philo);
 int			ft_eat(t_philo *philo);
+void		*ft_inf_rout(t_philo *philo);
 void		*ft_routine(void *arg);
 
 //	ft_clean.c

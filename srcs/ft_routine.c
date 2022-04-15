@@ -6,51 +6,11 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/11 17:03:23 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/14 18:10:31 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/15 15:56:11 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-int	ft_check_status(t_philo *philo)
-{
-	pthread_mutex_lock(&philo->data->ded);
-	if (philo->data->dead > 0)
-		return (pthread_mutex_unlock(&philo->data->ded), 1);
-	if ((ft_current_time() - philo->last_meal > philo->data->time_to_die)
-		&& philo->state == 1)
-	{
-		// pthread_mutex_lock(&philo->data->print_dead);
-		// pthread_mutex_lock(&philo->data->ded);
-		philo->data->dead++;
-		philo->state = 0;
-		//if (philo->data->dead == 1)
-		//{
-		ft_print_dead(philo);
-			// usleep(200);
-		//}
-		return (pthread_mutex_unlock(&philo->data->ded), 1);//pthread_mutex_unlock(&philo->data->print_dead), 1);
-	}
-	pthread_mutex_unlock(&philo->data->ded);
-	return (0);
-}
-
-int	ft_usleep(t_philo *philo, long long time)
-{
-	int		i;
-	float	max;
-
-	i = 0;
-	max = (float)time * 0.125;
-	while (i < max)
-	{
-		if (ft_check_status(philo))
-			return (1);
-		usleep(8 * 1000);
-		i++;
-	}
-	return (0);
-}
 
 int	ft_sleep(t_philo *philo)
 {
@@ -66,7 +26,6 @@ int	ft_eat_last(t_philo *philo)
 	ft_print_inf(philo, 1);
 	pthread_mutex_lock(&philo->data->fork_tab[philo->index]);
 	ft_print_inf(philo, 1);
-
 	ft_print_inf(philo, 5);
 	if (ft_usleep(philo, philo->data->time_to_eat))
 	{
@@ -93,7 +52,6 @@ int	ft_eat(t_philo *philo)
 		ft_print_inf(philo, 1);
 		pthread_mutex_lock(&philo->data->fork_tab[philo->index + 1]);
 		ft_print_inf(philo, 1);
-		
 		ft_print_inf(philo, 5);
 		if (ft_usleep(philo, philo->data->time_to_eat))
 		{
@@ -108,6 +66,17 @@ int	ft_eat(t_philo *philo)
 	return (0);
 }
 
+void	*ft_inf_rout(t_philo *philo)
+{
+	while (1)
+	{
+		if (ft_eat(philo) || ft_sleep(philo))
+			return (NULL);
+		ft_print_inf(philo, 2);
+		usleep(200);
+	}
+}
+
 void	*ft_routine(void *arg)
 {
 	t_philo	*philo;
@@ -115,13 +84,8 @@ void	*ft_routine(void *arg)
 	philo = (t_philo *)arg;
 	if (philo->data->nb_meal == -5)
 	{
-		while (1)
-		{
-			if (ft_eat(philo) || ft_sleep(philo))
-				return (NULL);
-			ft_print_inf(philo, 2);
-			usleep(200);
-		}
+		if (ft_inf_rout(philo))
+			return (NULL);
 	}
 	else
 	{

@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/11 17:05:50 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/14 17:40:15 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/15 13:07:18 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,19 +53,15 @@ char	*ft_display_color(int wich)
 void	ft_print_inf(t_philo *philo, int str)
 {
 	pthread_mutex_lock(&philo->data->ded);
-	if (philo->data->dead > 0) //&& str != 4)
+	if (philo->data->dead > 0)
 	{
 		pthread_mutex_unlock(&philo->data->ded);
 		return ;
 	}
 	pthread_mutex_lock(&philo->data->lock);
 	ft_putstr(ft_display_color(str));
-	// ft_putnbr(ft_current_time() - philo->data->start_time);
-	// write(1, " ", 1);
-	// ft_putnbr(philo->index + 1);
-	// write(1, " ", 1);
-	// ft_putstr(ft_display_string(str));
-	printf("%lld %d %s", ft_current_time() - philo->data->start_time, philo->index + 1, ft_display_string(str));
+	printf("%lld %d %s", ft_current_time() - philo->data->start_time,
+		philo->index + 1, ft_display_string(str));
 	ft_putstr("\033[0m");
 	pthread_mutex_unlock(&philo->data->lock);
 	pthread_mutex_unlock(&philo->data->ded);
@@ -75,11 +71,8 @@ void	ft_print_dead(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->data->lock);
 	ft_putstr("\e[38;5;196m");
-	// ft_putnbr(ft_current_time() - philo->data->start_time);
-	// write(1, " ", 1);
-	// ft_putnbr(philo->index + 1);
-	// ft_putstr(" died\n");
-	printf("%lld %d died\n", ft_current_time() - philo->data->start_time, philo->index + 1);
+	printf("%lld %d died\n", ft_current_time() - philo->data->start_time,
+		philo->index + 1);
 	ft_putstr("\033[0m");
 	pthread_mutex_unlock(&philo->data->lock);
 }

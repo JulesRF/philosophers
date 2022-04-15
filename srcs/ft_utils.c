@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/11 17:00:37 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/11 17:16:36 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/15 15:37:08 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,33 +22,46 @@ int	ft_strlen(const char *str)
 	return (i);
 }
 
-void	ft_putchar(char c)
-{
-	write (1, &c, 1);
-}
+// void	ft_putchar(char c)
+// {
+// 	write (1, &c, 1);
+// }
 
 void	ft_putstr(char *str)
 {
 	write(1, str, ft_strlen(str));
 }
 
-void	ft_putnbr(int nb)
+int	ft_check_status(t_philo *philo)
 {
-	if (nb == -2147483648)
+	pthread_mutex_lock(&philo->data->ded);
+	if (philo->data->dead > 0)
+		return (pthread_mutex_unlock(&philo->data->ded), 1);
+	if ((ft_current_time() - philo->last_meal > philo->data->time_to_die)
+		&& philo->state == 1)
 	{
-		write(1, "-2147483648", 11);
-		return ;
+		philo->data->dead++;
+		philo->state = 0;
+		ft_print_dead(philo);
+		return (pthread_mutex_unlock(&philo->data->ded), 1);
 	}
-	else if (nb < 0)
+	pthread_mutex_unlock(&philo->data->ded);
+	return (0);
+}
+
+int	ft_usleep(t_philo *philo, long long time)
+{
+	int		i;
+	float	max;
+
+	i = 0;
+	max = (float)time * 0.125;
+	while (i < max)
 	{
-		ft_putchar('-');
-		nb = nb * -1;
+		if (ft_check_status(philo))
+			return (1);
+		usleep(8 * 1000);
+		i++;
 	}
-	if (nb <= 9)
-		ft_putchar(nb + 48);
-	if (nb >= 10)
-	{
-		ft_putnbr(nb / 10);
-		ft_putchar(nb % 10 + 48);
-	}
+	return (0);
 }
