@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 16:03:19 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/19 11:49:33 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/19 14:24:31 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ void		ft_print_dead(t_philo *philo);
 int			ft_sleep(t_philo *philo);
 int			ft_eat_last(t_philo *philo);
 int			ft_eat(t_philo *philo);
-void		*ft_inf_rout(t_philo *philo);
+int			ft_inf_rout(t_philo *philo);
 void		*ft_routine(void *arg);
 
 //	ft_clean.c

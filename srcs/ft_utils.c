@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/11 17:00:37 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/15 15:37:08 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/19 17:01:14 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,11 @@ int	ft_usleep(t_philo *philo, long long time)
 
 	i = 0;
 	max = (float)time * 0.125;
+	// if ((philo->last_meal + time) >= (ft_current_time() + (philo->data->time_to_die)))
+	// {
+	// 	usleep((ft_current_time() + (philo->data->time_to_die)) - ft_current_time());
+	// 	return (1);
+	// }
 	while (i < max)
 	{
 		if (ft_check_status(philo))

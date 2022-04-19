@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/11 17:06:29 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/12 17:14:58 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/19 13:51:30 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ int	ft_join(t_data *data)
 		free(data->philo_tab[i]);
 		i++;
 	}
+	free(data->philo_tab);
 	return (0);
 }
 
@@ -36,6 +37,7 @@ void	ft_clean_mutex(t_data *data)
 		pthread_mutex_destroy(&data->fork_tab[i]);
 		i++;
 	}
+	free(data->fork_tab);
 	pthread_mutex_destroy(&data->lock);
 	pthread_mutex_destroy(&data->ded);
 	pthread_mutex_destroy(&data->print_dead);

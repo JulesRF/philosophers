@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/11 17:03:23 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/15 15:56:11 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/19 16:41:58 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,14 @@ int	ft_eat_last(t_philo *philo)
 	pthread_mutex_lock(&philo->data->fork_tab[philo->index]);
 	ft_print_inf(philo, 1);
 	ft_print_inf(philo, 5);
+	philo->last_meal = ft_current_time();
 	if (ft_usleep(philo, philo->data->time_to_eat))
 	{
 		pthread_mutex_unlock(&philo->data->fork_tab[philo->index]);
 		pthread_mutex_unlock(&philo->data->fork_tab[0]);
 		return (1);
 	}
-	philo->last_meal = ft_current_time();
+	// philo->last_meal = ft_current_time();
 	pthread_mutex_unlock(&philo->data->fork_tab[philo->index]);
 	pthread_mutex_unlock(&philo->data->fork_tab[0]);
 	return (0);
@@ -52,29 +53,35 @@ int	ft_eat(t_philo *philo)
 		ft_print_inf(philo, 1);
 		pthread_mutex_lock(&philo->data->fork_tab[philo->index + 1]);
 		ft_print_inf(philo, 1);
+		// if (ft_check)
 		ft_print_inf(philo, 5);
+		philo->last_meal = ft_current_time();
 		if (ft_usleep(philo, philo->data->time_to_eat))
 		{
 			pthread_mutex_unlock(&philo->data->fork_tab[philo->index + 1]);
 			pthread_mutex_unlock(&philo->data->fork_tab[philo->index]);
 			return (1);
 		}
-		philo->last_meal = ft_current_time();
+		// philo->last_meal = ft_current_time();
 		pthread_mutex_unlock(&philo->data->fork_tab[philo->index + 1]);
 		pthread_mutex_unlock(&philo->data->fork_tab[philo->index]);
 	}
 	return (0);
 }
 
-void	*ft_inf_rout(t_philo *philo)
+int	ft_inf_rout(t_philo *philo)
 {
 	while (1)
 	{
-		if (ft_eat(philo) || ft_sleep(philo))
-			return (NULL);
+		if (ft_eat(philo))
+			return (1);
+		if (ft_sleep(philo))
+			return (1);
 		ft_print_inf(philo, 2);
 		usleep(200);
+		
 	}
+	return (0);
 }
 
 void	*ft_routine(void *arg)
