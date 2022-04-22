@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/11 17:03:23 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/21 19:06:32 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/22 17:00:25 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,28 +24,35 @@ int	ft_eat_last(t_philo *philo)
 {
 	if (philo->data->nb_philo == 1)
 	{
+		pthread_mutex_lock(&philo->data->fork_tab[0]);
+		ft_print_inf(philo, 1);
 		usleep(philo->data->time_to_die * 1000);
 		ft_print_dead(philo);
-		return (1);
+		return (pthread_mutex_unlock(&philo->data->fork_tab[0]), 1);
 	}
 	pthread_mutex_lock(&philo->data->fork_tab[0]);
+	if (ft_check_status(philo))
+		return (pthread_mutex_unlock(&philo->data->fork_tab[0]), 1);
 	ft_print_inf(philo, 1);
 	pthread_mutex_lock(&philo->data->fork_tab[philo->index]);
+	if (ft_check_status(philo))
+		return (pthread_mutex_unlock(&philo->data->fork_tab[philo->index]),
+			pthread_mutex_unlock(&philo->data->fork_tab[0]), 1);
 	ft_print_inf(philo, 1);
 	ft_print_inf(philo, 5);
 	philo->last_meal = ft_current_time();
-	if (ft_usleep(philo, philo->data->time_to_eat))
-	{
-		return (pthread_mutex_unlock(&philo->data->fork_tab[philo->index]),
-			pthread_mutex_unlock(&philo->data->fork_tab[0]), 1);
-	}
-	pthread_mutex_unlock(&philo->data->fork_tab[philo->index]);
-	pthread_mutex_unlock(&philo->data->fork_tab[0]);
-	return (0);
+	ft_usleep(philo, philo->data->time_to_eat);
+	// if (ft_usleep(philo, philo->data->time_to_eat))
+	// 	return (pthread_mutex_unlock(&philo->data->fork_tab[philo->index]),
+	// 		pthread_mutex_unlock(&philo->data->fork_tab[0]), 1);
+	return (pthread_mutex_unlock(&philo->data->fork_tab[philo->index]),
+		pthread_mutex_unlock(&philo->data->fork_tab[0]), 0);
 }
 
 int	ft_eat(t_philo *philo)
 {
+	if (ft_check_status(philo) == 1)
+		return (1);
 	if (philo->index == philo->data->nb_philo - 1)
 	{
 		if (ft_eat_last(philo))
@@ -53,17 +60,22 @@ int	ft_eat(t_philo *philo)
 		return (0);
 	}
 	pthread_mutex_lock(&philo->data->fork_tab[philo->index]);
+	if (ft_check_status(philo))
+		return (pthread_mutex_unlock(&philo->data->fork_tab[philo->index]), 1);
 	ft_print_inf(philo, 1);
 	pthread_mutex_lock(&philo->data->fork_tab[philo->index + 1]);
+	if (ft_check_status(philo))
+		return (pthread_mutex_unlock(&philo->data->fork_tab[philo->index + 1]),
+			pthread_mutex_unlock(&philo->data->fork_tab[philo->index]), 1);
 	ft_print_inf(philo, 1);
 	ft_print_inf(philo, 5);
 	philo->last_meal = ft_current_time();
-	if (ft_usleep(philo, philo->data->time_to_eat))
-		return (pthread_mutex_unlock(&philo->data->fork_tab[philo->index + 1]),
-			pthread_mutex_unlock(&philo->data->fork_tab[philo->index]), 1);
-	pthread_mutex_unlock(&philo->data->fork_tab[philo->index + 1]);
-	pthread_mutex_unlock(&philo->data->fork_tab[philo->index]);
-	return (0);
+	ft_usleep(philo, philo->data->time_to_eat);
+	// if (ft_usleep(philo, philo->data->time_to_eat))
+	// 	return (pthread_mutex_unlock(&philo->data->fork_tab[philo->index + 1]),
+	// 		pthread_mutex_unlock(&philo->data->fork_tab[philo->index]), 1);
+	return (pthread_mutex_unlock(&philo->data->fork_tab[philo->index + 1]),
+		pthread_mutex_unlock(&philo->data->fork_tab[philo->index]), 0);
 }
 
 int	ft_inf_rout(t_philo *philo)

@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 16:03:19 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/19 14:24:31 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/22 17:21:49 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ typedef struct s_data {
 	long long			start_time;
 	pthread_mutex_t		lock;
 	pthread_mutex_t		ded;
-	pthread_mutex_t		print_dead;
+	pthread_mutex_t		last_meal;
 	pthread_mutex_t		*fork_tab;
 	t_philo				**philo_tab;
 }				t_data;
@@ -65,6 +65,7 @@ int			ft_atoi(const char *nptr);
 
 //	ft_init.c
 void		ft_newphilo(t_data *data, int i);
+void		ft_monitoring(t_data *data);
 void		ft_init_philo(t_data *data, int argc);
 void		ft_init_fork(t_data *data);
 void		ft_init_struct(t_data *data, int argc, char **argv);

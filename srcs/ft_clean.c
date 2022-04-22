@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/11 17:06:29 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/20 14:09:52 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/22 17:25:16 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,4 +40,5 @@ void	ft_clean_mutex(t_data *data)
 	free(data->fork_tab);
 	pthread_mutex_destroy(&data->lock);
 	pthread_mutex_destroy(&data->ded);
+	// pthread_mutex_destroy(&data->last_meal);
 }

@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/11 17:00:37 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/20 14:15:02 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/22 16:40:48 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,19 +44,31 @@ int	ft_check_status(t_philo *philo)
 	return (0);
 }
 
-int	ft_usleep(t_philo *philo, long long time)
+int	ft_usleep(t_philo *philo, long long time_in_ms)
 {
-	int		i;
-	float	max;
+	long long	start_time;
 
-	i = 0;
-	max = (float)time * 0.125;
-	while (i < max)
-	{
-		if (ft_check_status(philo))
-			return (1);
-		usleep(8 * 1000);
-		i++;
-	}
+	start_time = 0;
+	start_time = ft_current_time();
+	while ((ft_current_time() - start_time) < time_in_ms
+		&& ft_check_status(philo) == 0)
+		usleep(50);
 	return (0);
 }
+
+// int	ft_usleep(t_philo *philo, long long time)
+// {
+// 	int		i;
+// 	float	max;
+
+// 	i = 0;
+// 	max = (float)time * 0.125;
+// 	while (i < max)
+// 	{
+// 		if (ft_check_status(philo))
+// 			return (1);
+// 		usleep(8 * 1000);
+// 		i++;
+// 	}
+// 	return (0);
+// }

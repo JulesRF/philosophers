@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/11 17:04:38 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/20 14:10:06 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/22 17:27:54 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,38 @@ void	ft_newphilo(t_data *data, int i)
 	philo->id = id;
 }
 
+void	ft_monitoring(t_data *data)
+{
+	int i;
+	int meal;
+
+	meal = 0;
+	while (1)
+	{
+		i = 0;
+		while (i < data->nb_philo)
+		{
+			if (meal == data->nb_meal)
+				return;
+			// pthread_mutex_lock(&data->last_meal); faut juste bien mutex ici et dans ft_last_eat et ft_eat (t bo)
+			if (data->philo_tab[i]->meals == data->nb_meal)
+				meal++;
+			else if (ft_current_time() - data->philo_tab[i]->last_meal > data->time_to_die)
+			{
+				// pthread_mutex_unlock(&data->last_meal);
+				pthread_mutex_lock(&data->ded);
+				data->dead++;
+				ft_print_dead(data->philo_tab[i]);
+				pthread_mutex_unlock(&data->ded);
+				return ;
+			}
+			// pthread_mutex_unlock(&data->last_meal);
+			i++;
+		}
+		usleep(1000);
+	}
+}
+
 void	ft_init_philo(t_data *data, int argc)
 {
 	int	i;
@@ -47,6 +79,7 @@ void	ft_init_philo(t_data *data, int argc)
 		ft_newphilo(data, i);
 		i += 2;
 	}
+	ft_monitoring(data);
 }
 
 void	ft_init_fork(t_data *data)
@@ -75,6 +108,7 @@ void	ft_init_struct(t_data *data, int argc, char **argv)
 		data->nb_meal = -5;
 	pthread_mutex_init(&data->lock, NULL);
 	pthread_mutex_init(&data->ded, NULL);
+	// pthread_mutex_init(&data->last_meal, NULL);
 	data->philo_tab = malloc(sizeof(t_philo) * data->nb_philo);
 	if (!data->philo_tab)
 		return ;
