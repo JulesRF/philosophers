@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/11 17:05:50 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/15 13:07:18 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/25 15:36:24 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,11 @@ void	ft_print_inf(t_philo *philo, int str)
 void	ft_print_dead(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->data->lock);
+	if (philo->data->dead > 1)
+	{
+		pthread_mutex_unlock(&philo->data->lock);
+		return ;
+	}
 	ft_putstr("\e[38;5;196m");
 	printf("%lld %d died\n", ft_current_time() - philo->data->start_time,
 		philo->index + 1);

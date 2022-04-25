@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/11 17:00:37 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/22 16:40:48 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/25 15:56:41 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,14 @@ int	ft_check_status(t_philo *philo)
 	}
 	pthread_mutex_unlock(&philo->data->ded);
 	return (0);
+}
+
+void	ft_mealplusplus(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->data->last_meal);
+	philo->meals++;
+	pthread_mutex_unlock(&philo->data->last_meal);
+	return ;
 }
 
 int	ft_usleep(t_philo *philo, long long time_in_ms)

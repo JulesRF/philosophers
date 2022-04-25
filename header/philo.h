@@ -6,7 +6,7 @@
 /*   By: jroux-fo <jroux-fo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 16:03:19 by jroux-fo          #+#    #+#             */
-/*   Updated: 2022/04/22 17:21:49 by jroux-fo         ###   ########.fr       */
+/*   Updated: 2022/04/25 15:57:48 by jroux-fo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,9 @@ int			main(int argc, char **argv);
 
 //	ft_utils.c
 int			ft_strlen(const char *str);
-void		ft_putchar(char c);
 void		ft_putstr(char *str);
 int			ft_check_status(t_philo *philo);
+void		ft_mealplusplus(t_philo *philo);
 int			ft_usleep(t_philo *philo, long long time);
 
 //	ft_error.c
@@ -65,7 +65,7 @@ int			ft_atoi(const char *nptr);
 
 //	ft_init.c
 void		ft_newphilo(t_data *data, int i);
-void		ft_monitoring(t_data *data);
+void		ft_monitoring(t_data *data, int i, int meal);
 void		ft_init_philo(t_data *data, int argc);
 void		ft_init_fork(t_data *data);
 void		ft_init_struct(t_data *data, int argc, char **argv);
